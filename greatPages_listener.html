@@ -1,0 +1,37 @@
+<script>
+    (function() {
+      var originalSend = XMLHttpRequest.prototype.send;
+      
+      XMLHttpRequest.prototype.send = function(body) {
+        var xhr = this;
+        
+        xhr.addEventListener('load', function() {
+          
+          if (xhr.responseURL && xhr.responseURL.indexOf('/conversion') !== -1 && xhr.status === 200) {
+            
+            try {
+               var cleanData = {};
+               
+               var getValue = function(namePart) {
+                 var input = document.querySelector('input[name*="' + namePart + '"]');
+                 return input ? input.value : undefined;
+               };
+    
+               cleanData.name = getValue('nome');
+               cleanData.email = getValue('e-mail'); 
+               cleanData.phone = getValue('telefone');
+               
+               window.dataLayer = window.dataLayer || [];
+               window.dataLayer.push({
+                 'event': 'greatPagesFormSuccess',
+                 'gpFormData': cleanData
+               });
+               
+            } catch (err) {}
+          }
+        });
+    
+        return originalSend.apply(this, arguments);
+      };
+    })();
+    </script>

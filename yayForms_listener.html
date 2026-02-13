@@ -1,0 +1,22 @@
+<script>
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    
+    eventer(messageEvent, function(e) {
+      var key = e.message ? "message" : "data";
+      var data = e[key];
+    
+      if (!data || typeof data !== 'object') return;
+    
+      var validEventTypes = ["YFView", "YFStart", "YFAnswer", "YFSubmit"];
+    
+      if (data.type && validEventTypes.includes(data.type)) {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          'event': data.type,
+          'data': data.eventData
+        });
+      }
+    }, false);
+    </script>

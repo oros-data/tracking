@@ -1,0 +1,27 @@
+<script>
+    window.ub.hooks.beforeFormSubmit.push(function(args) {
+    var email = args.formElement.querySelector('input#email');
+    var name = args.formElement.querySelector('input#name');
+    var firstName = args.formElement.querySelector('input#first_name');
+    var lastName = args.formElement.querySelector('input#last_name');
+    var phoneNumber = args.formElement.querySelector('input#phone_number');
+    var formId = args.formElement.id;
+    
+    dataLayer.push({
+    'event': 'unbounce-form-submission',
+    'form-id': formId,
+    'form-email': email.value,
+    'form-name-field': name ? name.value : '',
+    'form-firstname-field': firstName ? firstName.value : '',
+    'form-lastname-field': lastName ? lastName.value : '',
+    'form-phonenumber-field': phoneNumber ? phoneNumber.value : ''
+    });
+    });
+    
+    // This is used as a trigger for another tag to do your work BEFORE the datalayer gets cleared 
+    window.ub.hooks.afterFormSubmit.push(function() {
+    window.dataLayer.push({
+    'event': 'ub-form-success'
+    });
+    });
+</script>

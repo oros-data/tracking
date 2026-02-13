@@ -1,0 +1,14 @@
+<script>
+    (function() {
+      window.dataLayer = window.dataLayer || [];
+    
+      window.addEventListener('rd:conversion', function(e) {
+        var allData = e.detail || {};
+        window.dataLayer.push({
+          'event': 'rdStationFormSuccess',
+          'rdFormId': allData.conversion_identifier,
+          'rdFormData': allData 
+        });
+      });
+    })();
+    </script>

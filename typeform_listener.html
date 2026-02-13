@@ -1,0 +1,32 @@
+<script>
+    ///LISTEN FOR MESSAGE FROM IFRAME TYPEFORM
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+    
+    // Listen to message from child window
+    eventer(messageEvent,function(e) {
+    var key = e.message ? "message" : "data";
+    var data = e[key];
+    
+    if(data.type == "form-submit"){
+    console.log("???? Typeform Conversion detected!")
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+    'event': 'typeform_submitted',
+    'typeFormID': data.formId
+    });
+    }
+    
+    else if (data.type == "form-screen-changed") {
+    console.log("???? Typeform Step Changed!")
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+    'event': 'typeform_step_change',
+    'typeFormID': data.formId,
+    'stepReference': data.ref
+    });
+    }
+    
+    },false);
+</script>

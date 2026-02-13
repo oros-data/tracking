@@ -1,0 +1,42 @@
+<script type="text/javascript">
+    //fired if form is submitted successfully
+    mc4wp.forms.on('success', function(form) {
+    window.dataLayer.push({
+    "event": "MailchimpFormSuccess",
+    "formID": form.id,
+    "formName": form.name
+    });
+    });
+    //fired if form is used to subscribe
+    mc4wp.forms.on('subscribed', function(form) {
+    window.dataLayer.push({
+    "event": "MailchimpFormSubscribed",
+    "formID": form.id,
+    "formName": form.name
+    });
+    });
+    //fired if form is submitted with errors
+    mc4wp.forms.on('error', function(form) {
+    window.dataLayer.push({
+    "event": "MailchimpFormError",
+    "formID": form.id,
+    "formName": form.name
+    });
+    });
+    //fired if form is used to unsubscribe
+    mc4wp.forms.on('unsubscribed', function(form) {
+    window.dataLayer.push({
+    "event": "MailchimpFormUnsubscribed",
+    "formID": form.id,
+    "formName": form.name
+    });
+    });
+    //fired once user starts filling in a form
+    mc4wp.forms.on('started', function(form) {
+    window.dataLayer.push({
+    "event": "MailchimpFormStarted",
+    "formID": form.id,
+    "formName": form.name
+    });
+    });
+</script>

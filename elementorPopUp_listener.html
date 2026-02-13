@@ -1,0 +1,16 @@
+<script>
+    jQuery(document).on('elementor/popup/show', function(Event, popupId) { 
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+    'event': "show_Popup",
+    'popupID': popupId
+    });
+    });
+    jQuery(document).on('elementor/popup/hide', function(Event, popupId) { 
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+    'event': "close_Popup",
+    'popupID': popupId
+    });
+    });
+</script>

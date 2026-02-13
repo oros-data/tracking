@@ -1,0 +1,21 @@
+<script>
+    gsc('onShow', function(widgetId, data) {
+    window.dataLayer.push({ 
+    'event': 'GSC_Impression', 
+    'widgetId': widgetId
+    });
+    });
+    gsc('onClose', function(widgetId, data) {
+    window.dataLayer.push({ 
+    'event': 'GSC_Close', 
+    'widgetId': widgetId
+    });
+    });
+    gsc('onSubmit', function(widgetId, data) {
+    window.dataLayer.push({ 
+    'event': 'getSiteControlConv', 
+    'widgetId': widgetId, 
+    'formData': data 
+    });
+    });
+</script>
