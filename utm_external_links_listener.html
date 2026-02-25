@@ -1,0 +1,112 @@
+<script>
+  (function() {
+    var STORAGE_KEY = 'oros_saved_attribution_params';
+    var TRACKING_PARAM_PATTERN = /^(utm_|gclid$|fbclid$|ttclid$|msclkid$)/i;
+
+    function getStoredParams() {
+      var raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return {};
+
+      try {
+        var parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function storeParams(params) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(params));
+    }
+
+    function mergeTrackingParamsFromCurrentUrl() {
+      var incoming = new URLSearchParams(window.location.search);
+      var stored = getStoredParams();
+      var hasUpdates = false;
+
+      incoming.forEach(function(value, key) {
+        if (TRACKING_PARAM_PATTERN.test(key)) {
+          stored[key] = value;
+          hasUpdates = true;
+        }
+      });
+
+      if (hasUpdates) {
+        storeParams(stored);
+      }
+
+      return stored;
+    }
+
+    function isNavigableHttpUrl(url) {
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    }
+
+    function injectParamsIntoUrl(url, trackingParams) {
+      Object.keys(trackingParams).forEach(function(key) {
+        url.searchParams.set(key, trackingParams[key]);
+      });
+    }
+
+    function processLink(link, trackingParams) {
+      if (!link || !link.getAttribute) return;
+      if (link.dataset.utmInjected === 'true') return;
+
+      var href = link.getAttribute('href');
+      if (!href || href.charAt(0) === '#') return;
+      if (/^(mailto:|tel:|javascript:)/i.test(href)) return;
+
+      var url;
+      try {
+        url = new URL(link.href, window.location.href);
+      } catch (e) {
+        return;
+      }
+
+      if (!isNavigableHttpUrl(url)) return;
+
+      injectParamsIntoUrl(url, trackingParams);
+      link.href = url.toString();
+      link.dataset.utmInjected = 'true';
+    }
+
+    function processAllLinks(trackingParams) {
+      if (!Object.keys(trackingParams).length) return;
+
+      var links = document.querySelectorAll('a[href]');
+      links.forEach(function(link) {
+        processLink(link, trackingParams);
+      });
+    }
+
+    var trackedParams = mergeTrackingParamsFromCurrentUrl();
+    if (!Object.keys(trackedParams).length) return;
+
+    function runInjection() {
+      processAllLinks(trackedParams);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runInjection);
+    } else {
+      runInjection();
+    }
+
+    document.addEventListener('click', function(event) {
+      var link = event.target.closest && event.target.closest('a[href]');
+      if (!link) return;
+
+      processLink(link, trackedParams);
+    }, true);
+
+    var observer = new MutationObserver(function() {
+      runInjection();
+    });
+
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+
+    setTimeout(function() {
+      observer.disconnect();
+    }, 10000);
+  })();
+</script>
